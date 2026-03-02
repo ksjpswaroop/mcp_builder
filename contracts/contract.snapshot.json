@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "tools": [
+    {
+      "name": "get_weather_data",
+      "description": "Get weather data for a location. Returns placeholder data for demo.",
+      "inputSchemaDialect": "2020-12",
+      "outputSchemaProvided": true,
+      "risk": "medium"
+    },
+    {
+      "name": "echo",
+      "description": "Echo back the message. Useful for smoke tests.",
+      "inputSchemaDialect": "2020-12",
+      "outputSchemaProvided": true,
+      "risk": "low"
+    }
+  ],
+  "resources": [],
+  "prompts": []
+}

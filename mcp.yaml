@@ -1,0 +1,113 @@
+apiVersion: "com.example.mcp-template/v1alpha1"
+kind: "MCPServer"
+metadata:
+  name: "example-weather"
+  labels:
+    domain: "example"
+  annotations:
+    summary: "Template skeleton; fill required fields"
+
+spec:
+  identity:
+    mcpName: "io.github.example/weather"
+    title: "Weather Tools"
+    description: "Provides weather lookup tools for developer workflows."
+    version: "0.1.0"
+    repository:
+      url: "https://example.com/repo"
+      source: "git"
+    owners:
+      - name: "Team Example"
+        contact: "team@example.com"
+
+  protocol:
+    preferredVersion: "2025-11-25"
+    supportedVersions: ["2025-11-25", "2025-06-18"]
+    transports:
+      - type: "stdio"
+      - type: "streamable-http"
+        http:
+          baseUrl: "https://mcp.example.com/mcp"
+    capabilities:
+      tools: { listChanged: true }
+      resources: { subscribe: true, listChanged: true }
+      prompts: { listChanged: false }
+      logging: {}
+      tasks: { enabled: false }
+
+  surface:
+    primitives:
+      tools: true
+      resources: true
+      prompts: false
+    risk:
+      defaultToolRisk: "medium"
+      humanInLoopRequiredFor: ["high"]
+
+  security:
+    auth:
+      mode: "env-or-oauth"
+    accessControl:
+      model:
+        principleOfLeastPrivilege: true
+      rateLimiting:
+        enabled: true
+        policy: "per-user-and-per-tool"
+    dataHandling:
+      dataClasses: ["public", "internal", "pii", "secrets"]
+      allowedOutputs:
+        logsMayContainPII: false
+        logsMayContainSecrets: false
+      retention:
+        toolAuditDays: 30
+        logDays: 7
+    threatNotes:
+      - "SSRF risk if tool accepts URLs"
+      - "Confused deputy risk if proxying OAuth to third-party APIs"
+
+  observability:
+    logging:
+      mcpLoggingCapability: true
+      defaultLevel: "info"
+      redact:
+        secrets: true
+        pii: true
+    progress:
+      enableProgressTokens: true
+    tracing:
+      opentelemetry:
+        enabled: false
+        serviceName: "example-weather-mcp"
+
+  lifecycle:
+    state: "draft"
+    changelog:
+      - version: "0.1.0"
+        notes: "Initial draft."
+
+  deployment:
+    registry:
+      enabled: true
+      serverJsonPath: "./server.json"
+      publisherMetadataKey: "com.example.publisher/metadata"
+    local:
+      stdio:
+        command: "python"
+        args: ["-m", "examples.stdio.server"]
+        env:
+          WEATHER_API_KEY: "${ENV:WEATHER_API_KEY}"
+    remote:
+      streamableHttp:
+        url: "https://mcp.example.com/mcp"
+
+  contractSnapshot:
+    generatedAt: "2026-03-02T00:00:00Z"
+    tools:
+      - name: "get_weather_data"
+        inputSchemaDialect: "2020-12"
+        outputSchemaProvided: true
+        risk: "medium"
+      - name: "echo"
+        inputSchemaDialect: "2020-12"
+        outputSchemaProvided: true
+        risk: "low"

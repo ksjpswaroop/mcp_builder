@@ -1,0 +1,8 @@
+# Core MCP and examples (requires Python 3.10+)
+mcp[cli]>=1.4.0
+uvicorn>=0.30.0
+
+# Validation and codegen scripts
+pyyaml>=6.0
+jsonschema>=4.20.0
+requests>=2.31.0
